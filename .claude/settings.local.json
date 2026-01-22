@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(plugin-dev:plugin-structure)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd marketplace configuration\n\nEnable plugin marketplace support by adding the required\nmarketplace.json file with plugin metadata and discovery info.\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(wc:*)",
+      "WebFetch(domain:mcp.devenv.sh)",
+      "Skill(plugin-dev:skill-development)",
+      "WebSearch",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:devenv.sh)"
+    ]
+  }
+}

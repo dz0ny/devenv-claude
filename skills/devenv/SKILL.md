@@ -238,9 +238,12 @@ Ready-to-use devenv configurations:
 **For migrations:**
 - Read shell.nix/default.nix/process-compose.yml
 - Identify languages, services, processes, platform-specific logic
+- Use `search_packages` to find devenv equivalents for nix packages
 
 **For new projects:**
 - Confirm requirements (languages, services, processes)
+- Use `search_packages` to verify package availability
+- Use `search_options` to discover configuration options
 - Select appropriate template
 
 ### 3. Provide Guidance
@@ -248,6 +251,11 @@ Ready-to-use devenv configurations:
 - Point to specific reference sections, don't repeat verbatim
 - Use templates as starting points, customize for user's needs
 - Include test instructions (`devenv shell`, `devenv up`)
+- **Query the MCP server** (https://mcp.devenv.sh/) for the latest documentation when:
+  - User asks about recently added features
+  - Reference files may be outdated
+  - Need to verify current option syntax
+  - Seeking authoritative answers not in local references
 
 ### 4. Anticipate Platform Issues
 
@@ -263,7 +271,58 @@ Ready-to-use devenv configurations:
 - Website: https://devenv.sh
 - GitHub: https://github.com/cachix/devenv
 
-**For latest features:** Use Context7 to fetch current docs: `/cachix/devenv`
+**For latest features and live documentation:**
+- **MCP Server:** https://mcp.devenv.sh/ - Query devenv documentation in real-time using MCP tools
+- **Context7:** Use Context7 to fetch current docs: `/cachix/devenv`
+
+### Using the devenv MCP Server
+
+This skill automatically configures the devenv MCP server (https://mcp.devenv.sh/) for real-time access to devenv documentation.
+
+**The MCP server is packaged with this skill** - no additional setup required. Two MCP tools are automatically available:
+
+1. **`search_packages`** - Search available packages in devenv
+   - Use when users ask "what packages are available?"
+   - Find specific tools, libraries, or language versions
+   - Discover package names for devenv.nix `packages = [ ]` configuration
+   - Example queries: "python 3.12", "postgresql", "nodejs", "rust toolchain"
+
+2. **`search_options`** - Search available configuration options
+   - Use when users need to find specific devenv.nix options
+   - Query language settings, service configurations, process options
+   - Discover available attributes and their usage
+   - Example queries: "python venv", "postgres port", "process dependencies"
+
+**When to use these tools:**
+- User asks about available packages or tools
+- Need to find the correct package name for devenv.nix
+- User wants to know what configuration options exist
+- Verifying option names and syntax
+- Finding examples of specific configurations
+
+When users need the most current information or have questions not covered in the references, use these MCP tools to query the server for authoritative, up-to-date answers.
+
+### MCP Tools Usage Examples
+
+**Scenario 1: User asks "How do I add Python 3.12?"**
+1. Use `search_packages` with query "python 3.12"
+2. Find the correct package name
+3. Show how to add to devenv.nix: `languages.python.enable = true;`
+
+**Scenario 2: User migrating from nix-shell with `buildInputs = [ pkgs.redis pkgs.postgresql ]`**
+1. Use `search_packages` to verify "redis" availability
+2. Use `search_options` to find service configuration options
+3. Convert to: `services.redis.enable = true; services.postgres.enable = true;`
+
+**Scenario 3: User asks "Can I configure PostgreSQL port?"**
+1. Use `search_options` with query "postgres port"
+2. Find the option (e.g., `services.postgres.port`)
+3. Show configuration example
+
+**Scenario 4: User wants to add a specific tool like "ripgrep"**
+1. Use `search_packages` with query "ripgrep"
+2. Confirm package name
+3. Add to `packages = [ pkgs.ripgrep ];`
 
 ## Quick Reference
 

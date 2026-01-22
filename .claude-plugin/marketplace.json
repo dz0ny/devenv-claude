@@ -4,20 +4,19 @@
     "name": "dz0ny",
     "url": "https://github.com/dz0ny"
   },
+  "metadata": {
+    "description": "Claude Code skill for migrating from nix-shell to devenv",
+    "version": "1.0.0",
+    "updated": "2026-01-22"
+  },
   "plugins": [
     {
       "name": "devenv",
-      "version": "1.0.0",
-      "description": "Claude Code skill for migrating from nix-shell to devenv with comprehensive guides, templates, and real-world patterns",
-      "author": {
-        "name": "dz0ny",
-        "url": "https://github.com/dz0ny"
-      },
-      "homepage": "https://github.com/dz0ny/devenv-claude",
-      "repository": "https://github.com/dz0ny/devenv-claude",
-      "license": "MIT",
-      "keywords": ["devenv", "nix", "nix-shell", "migration", "development-environment"],
-      "source": "https://github.com/dz0ny/devenv-claude.git"
+      "description": "Migration guides, language configs, services, and templates for converting nix-shell to devenv. Includes Python, JavaScript, PostgreSQL, Redis, and more.",
+      "source": "./",
+      "skills": [
+        "./skills/devenv"
+      ]
     }
   ]
 }

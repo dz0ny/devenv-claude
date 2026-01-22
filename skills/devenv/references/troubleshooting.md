@@ -252,7 +252,28 @@ inputs:
 ImportError: libstdc++.so.6: cannot open shared object file
 ```
 
-**Solution:**
+**Modern Solution (Recommended):**
+Use `directory` + `uv.sync.enable` - devenv handles patchelf automatically:
+
+```nix
+{ pkgs, ... }:
+
+{
+  languages.python = {
+    enable = true;
+    version = "3.13";
+    directory = "./";  # Or "./backend" for subdirectory projects
+    uv = {
+      enable = true;
+      sync.enable = true;  # Auto-handles patchelf on Linux
+    };
+  };
+}
+```
+
+**Manual Solution (if needed):**
+Only required if NOT using `directory` + `uv.sync.enable`:
+
 ```nix
 { pkgs, ... }:
 
@@ -261,6 +282,11 @@ ImportError: libstdc++.so.6: cannot open shared object file
     enable = true;
     uv.enable = true;
   };
+
+  enterShell = ''
+    uv sync --dev
+    source .venv/bin/activate
+  '';
 
   packages = [ pkgs.patchelf ];
 

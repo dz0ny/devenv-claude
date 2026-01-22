@@ -51,18 +51,42 @@ languages.python = {
 
 **uv** is a fast Python package installer and resolver, ideal for modern Python projects.
 
-**Basic uv setup:**
+**Recommended: Use directory + sync (automatic everything):**
 ```nix
 languages.python = {
   enable = true;
+  version = "3.13";
+  directory = "./backend";  # Where pyproject.toml lives
   uv = {
     enable = true;
-    sync.enable = true;  # Runs 'uv sync' on shell entry
+    sync.enable = true;  # Auto-runs 'uv sync' on shell entry
   };
 };
 ```
 
-**uv with custom sync command:**
+This automatically:
+- ✅ Runs `uv sync` when entering shell
+- ✅ Activates the virtual environment
+- ✅ Handles patchelf on Linux (no manual patching needed!)
+- ✅ Manages PYTHONPATH correctly
+- ✅ Exports VIRTUAL_ENV for tools
+
+**For monorepo/subdirectory projects:**
+```nix
+languages.python = {
+  enable = true;
+  directory = "./backend";  # Point to subdirectory with pyproject.toml
+  uv = {
+    enable = true;
+    sync = {
+      enable = true;
+      allExtras = true;  # Install all optional dependencies
+    };
+  };
+};
+```
+
+**Manual uv sync (if you need custom flags):**
 ```nix
 languages.python = {
   enable = true;
@@ -71,26 +95,6 @@ languages.python = {
 
 enterShell = ''
   uv sync --dev --all-extras
-'';
-```
-
-**Hakuto pattern** (uv + manual venv activation):
-```nix
-languages.python = {
-  enable = true;
-  version = "3.13";
-  uv.enable = true;
-};
-
-enterShell = ''
-  # Sync dependencies
-  uv sync --dev
-
-  # Activate venv (uv creates .venv automatically)
-  source .venv/bin/activate
-
-  # Clear PYTHONPATH to avoid conflicts with nixpkgs
-  unset PYTHONPATH
 '';
 ```
 
@@ -182,8 +186,9 @@ Hakuto uses Playwright for end-to-end testing:
 
 ### Platform-Specific: Linux patchelf
 
-Python wheels with compiled extensions (.so files) may need patching on Linux/NixOS:
+**If using `directory` + `uv.sync.enable`:** devenv handles patchelf automatically - no manual patching needed!
 
+**Only needed for manual venv management:**
 ```nix
 { pkgs, config, ... }:
 
@@ -193,8 +198,14 @@ Python wheels with compiled extensions (.so files) may need patching on Linux/Ni
     uv.enable = true;
   };
 
+  enterShell = ''
+    # Manual sync without directory option
+    uv sync --dev
+    source .venv/bin/activate
+  '';
+
+  # Manual patchelf for Linux (only if NOT using directory + sync.enable)
   enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-    # Patch .so files in venv for NixOS compatibility
     if [ -d .venv ] && [ ! -f .venv/.patched ]; then
       find .venv -name "*.so" -type f | while read -r so_file; do
         patchelf --set-rpath "${pkgs.stdenv.cc.cc.lib}/lib:$(patchelf --print-rpath "$so_file" 2>/dev/null || true)" "$so_file" 2>/dev/null || true
@@ -205,13 +216,10 @@ Python wheels with compiled extensions (.so files) may need patching on Linux/Ni
 }
 ```
 
-**When needed:**
+**When patchelf is needed:**
 - NixOS or Nix on Linux
 - Python packages with C extensions (numpy, pandas, psycopg2, etc.)
-
-**Not needed on:**
-- macOS
-- Traditional Linux distros (Ubuntu, Fedora, etc.) with Nix
+- Only when NOT using `languages.python.directory` + `uv.sync.enable`
 
 ## JavaScript / Node.js
 

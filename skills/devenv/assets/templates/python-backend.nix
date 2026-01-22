@@ -30,11 +30,14 @@
     pgweb          # Web-based database browser
   ];
 
-  # Python with uv
+  # Python with uv (automatic venv + patchelf)
   languages.python = {
     enable = true;
     version = "3.13";
-    uv.enable = true;
+    uv = {
+      enable = true;
+      sync.enable = true;  # Auto-sync on shell entry
+    };
   };
 
   # PostgreSQL 17
@@ -139,15 +142,6 @@
 
   # Shell initialization
   enterShell = ''
-    # Sync Python dependencies with uv
-    uv sync --dev
-
-    # Activate virtual environment
-    source .venv/bin/activate
-
-    # Clear PYTHONPATH to avoid conflicts with nixpkgs
-    unset PYTHONPATH
-
     echo "Python backend environment ready!"
     echo ""
     echo "Available commands:"
@@ -159,14 +153,5 @@
     echo "Redis:    $REDIS_URL"
   '';
 
-  # Platform-specific configuration (Linux patchelf for Python wheels)
-  enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-    # Patch .so files in venv for NixOS compatibility
-    if [ -d .venv ] && [ ! -f .venv/.patched ]; then
-      find .venv -name "*.so" -type f | while read -r so_file; do
-        patchelf --set-rpath "${pkgs.stdenv.cc.cc.lib}/lib:$(patchelf --print-rpath "$so_file" 2>/dev/null || true)" "$so_file" 2>/dev/null || true
-      done
-      touch .venv/.patched
-    fi
-  '';
+  # Note: uv.sync.enable handles venv activation and Linux patchelf automatically
 }

@@ -275,13 +275,14 @@ devenv.nix:
     nodePackages.eslint
   ];
 
-  # Backend: Python with uv
+  # Backend: Python with uv (automatic venv + patchelf)
   languages.python = {
     enable = true;
     version = "3.13";
+    directory = "./backend";  # Where pyproject.toml lives
     uv = {
       enable = true;
-      sync.enable = true;  # Runs uv sync on shell entry
+      sync.enable = true;  # Auto-sync on shell entry
     };
   };
 
@@ -366,16 +367,7 @@ devenv.nix:
     (cd frontend && make dist)
   '';
 
-  # Platform-specific configuration
-  enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-    # Linux: patch Python wheel .so files for Nix
-    if [ -d .venv ] && [ ! -f .venv/.patched ]; then
-      find .venv -name "*.so" -type f | while read -r so_file; do
-        patchelf --set-rpath "${pkgs.stdenv.cc.cc.lib}/lib:$(patchelf --print-rpath "$so_file" 2>/dev/null || true)" "$so_file" 2>/dev/null || true
-      done
-      touch .venv/.patched
-    fi
-  '';
+  # Note: Python uv.sync.enable handles venv activation and Linux patchelf automatically
 }
 ```
 

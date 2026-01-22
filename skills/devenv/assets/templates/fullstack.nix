@@ -37,11 +37,15 @@
     pgweb          # Web-based DB browser
   ];
 
-  # Backend: Python with uv
+  # Backend: Python with uv (automatic venv + patchelf)
   languages.python = {
     enable = true;
     version = "3.13";
-    uv.enable = true;
+    directory = "./backend";  # Where pyproject.toml lives
+    uv = {
+      enable = true;
+      sync.enable = true;  # Auto-sync on shell entry
+    };
   };
 
   # Frontend: Elm
@@ -200,15 +204,6 @@
 
   # Shell initialization
   enterShell = ''
-    # Setup backend
-    cd backend
-    uv sync --dev
-    source .venv/bin/activate
-    cd ..
-
-    # Clear PYTHONPATH
-    unset PYTHONPATH
-
     # Generate API client
     generate-api-client
 
@@ -237,13 +232,5 @@
     echo "========================================="
   '';
 
-  # Platform-specific: Linux patchelf for Python wheels
-  enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-    if [ -d backend/.venv ] && [ ! -f backend/.venv/.patched ]; then
-      find backend/.venv -name "*.so" -type f | while read -r so_file; do
-        patchelf --set-rpath "${pkgs.stdenv.cc.cc.lib}/lib:$(patchelf --print-rpath "$so_file" 2>/dev/null || true)" "$so_file" 2>/dev/null || true
-      done
-      touch backend/.venv/.patched
-    fi
-  '';
+  # Note: Python uv.sync.enable handles venv activation and Linux patchelf automatically
 }

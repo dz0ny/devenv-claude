@@ -32,7 +32,11 @@
   languages.python = {
     enable = true;
     version = "3.13";
-    uv.enable = true;
+    directory = "./python-api";  # Where pyproject.toml lives
+    uv = {
+      enable = true;
+      sync.enable = true;  # Auto-sync on shell entry
+    };
   };
 
   languages.javascript = {
@@ -203,10 +207,6 @@
 
   # Shell initialization
   enterShell = ''
-    # Setup Python environment
-    cd python-api && uv sync --dev && source .venv/bin/activate && cd ..
-    unset PYTHONPATH
-
     # Setup Node environment
     cd frontend && npm install &>/dev/null && cd ..
 
@@ -237,13 +237,5 @@
     echo "================================================"
   '';
 
-  # Platform-specific: Linux patchelf for Python
-  enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-    if [ -d python-api/.venv ] && [ ! -f python-api/.venv/.patched ]; then
-      find python-api/.venv -name "*.so" -type f | while read -r so_file; do
-        patchelf --set-rpath "${pkgs.stdenv.cc.cc.lib}/lib:$(patchelf --print-rpath "$so_file" 2>/dev/null || true)" "$so_file" 2>/dev/null || true
-      done
-      touch python-api/.venv/.patched
-    fi
-  '';
+  # Note: Python uv.sync.enable handles venv activation and Linux patchelf automatically
 }

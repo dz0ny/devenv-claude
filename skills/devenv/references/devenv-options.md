@@ -37,13 +37,26 @@ All language configurations follow the pattern: `languages.<lang>.enable = true;
 
 ### Python
 
+**Recommended (automatic venv + patchelf):**
 ```nix
 languages.python = {
   enable = true;
-  version = "3.12";
-  venv.enable = true;  # Create .venv automatically
-  uv.enable = true;    # Use uv for package management
-  poetry.enable = true; # Use poetry
+  version = "3.13";
+  directory = "./backend";  # Where pyproject.toml lives
+  uv = {
+    enable = true;
+    sync.enable = true;     # Auto-sync on shell entry
+    sync.allExtras = true;  # Install all extras
+  };
+};
+```
+
+**Other options:**
+```nix
+languages.python = {
+  enable = true;
+  venv.enable = true;      # Auto .venv creation
+  poetry.enable = true;    # Use poetry instead of uv
 };
 ```
 

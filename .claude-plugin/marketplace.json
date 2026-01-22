@@ -1,4 +1,9 @@
 {
+  "name": "devenv-claude",
+  "owner": {
+    "name": "dz0ny",
+    "url": "https://github.com/dz0ny"
+  },
   "plugins": [
     {
       "name": "devenv",
@@ -12,7 +17,7 @@
       "repository": "https://github.com/dz0ny/devenv-claude",
       "license": "MIT",
       "keywords": ["devenv", "nix", "nix-shell", "migration", "development-environment"],
-      "path": "."
+      "source": "https://github.com/dz0ny/devenv-claude.git"
     }
   ]
 }

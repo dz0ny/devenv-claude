@@ -7,6 +7,8 @@ description: Migrate from nix-shell to devenv or create new devenv projects. Use
 
 Convert nix-shell projects to devenv or create new devenv environments with declarative configuration for languages, services, and processes.
 
+**Official devenv.nix Options Reference**: https://github.com/cachix/devenv/blob/main/docs/src/reference/options.md
+
 ## What is devenv?
 
 **devenv** is a declarative development environment tool built on Nix that provides:
@@ -15,7 +17,7 @@ Convert nix-shell projects to devenv or create new devenv environments with decl
 - **Process orchestration**: Dev servers, watchers, and workers in one configuration
 - **Better isolation**: Services use project-local data directories
 - **Simplified setup**: Single `devenv.nix` replaces multiple configuration files
-- **Pre-commit integration**: Declarative git hooks
+- **Pre-commit integration**: Declarative git hooks (170+ built-in)
 - **Task system**: Define build, test, and deployment tasks
 
 ## When to Use This Skill
@@ -108,74 +110,41 @@ See [Migration Guide](./references/migration-guide.md) for detailed conversion p
 |-----------|--------|
 | `buildInputs` | `packages` + `languages.*` |
 | `shellHook` | `enterShell` |
-| Manual service setup | `services.*` |
+| Manual service setup | `services.*` (auto-managed) |
 | process-compose.yml | `processes` |
 | Makefile tasks | `scripts` |
-| .pre-commit-config.yaml | `git-hooks.hooks.*` (171 built-in hooks) |
+| .pre-commit-config.yaml | `git-hooks.hooks.*` (170+ built-in) |
 
-## Navigation
+## Reference Documentation
 
-### Reference Guides
+### Quick Reference
 
-Detailed documentation on specific topics:
+**[devenv.nix Options](./references/devenv-options.md)** - Common configuration patterns and official options reference
 
-- **[Migration Guide](./references/migration-guide.md)** - Step-by-step conversion from nix-shell
-  - Why migrate
-  - Basic conversion patterns (mkShell → devenv.nix)
-  - Flakes integration
-  - Complex migrations (Hakuto example)
-  - Step-by-step migration process
-  - Common pitfalls
+### Detailed Guides
 
-- **[Language Configurations](./references/language-configs.md)** - Setting up programming languages
-  - Python (venv, uv, poetry, PYTHONPATH)
-  - JavaScript/Node (npm, yarn, pnpm)
-  - Elm (elm-land integration)
-  - Go, Rust
-  - Multi-language projects
-  - Platform-specific issues (Linux patchelf, macOS frameworks)
+**By Topic:**
 
-- **[Services Guide](./references/services-guide.md)** - Database and service setup
-  - PostgreSQL (versions, initialization, configuration)
-  - Redis (persistence, configuration)
-  - MySQL, MongoDB, Elasticsearch, RabbitMQ
-  - Service management (start, stop, logs, health checks)
-  - Migrating from process-compose.yml
+- **[Migration Guide](./references/migration-guide.md)** - Converting from nix-shell to devenv
+  - Basic patterns (mkShell → devenv.nix), flakes integration, complex migrations
 
-- **[Processes and Tasks](./references/processes-tasks.md)** - Process orchestration and scripts
-  - Process definition and configuration
-  - Dependencies and health checks
-  - Restart policies
-  - Migrating from process-compose.yml
-  - Scripts for one-time tasks
-  - Common patterns (fullstack, API + worker, etc.)
+- **[Language Configurations](./references/language-configs.md)** - Language-specific setup
+  - Python (venv, uv, poetry), JavaScript/Node, Elm, Go, Rust, multi-language projects
 
-- **[Git Hooks Guide](./references/git-hooks-guide.md)** - Pre-commit hook configuration
-  - Built-in hooks vs custom hooks (171 available)
-  - Migration from Python Nix packages to prek
-  - Common patterns (Python, JavaScript, Nix, fullstack)
-  - Hook configuration (stages, file matching, exclusions)
-  - Language-specific hooks (Python, JavaScript, Go, Rust, Nix, etc.)
-  - Troubleshooting and best practices
+- **[Services Guide](./references/services-guide.md)** - Database and service configuration
+  - PostgreSQL, Redis, MySQL, MongoDB, Elasticsearch - setup and management
 
-- **[Advanced Patterns](./references/advanced-patterns.md)** - Production-tested patterns
-  - One-time initialization processes (db-init pattern)
-  - Custom health checks (role verification, HTTP, TCP, command-based)
-  - Process dependency chains and conditions
-  - Advanced PostgreSQL setup (multiple databases, roles, extensions)
-  - Python virtual environment management (PYTHONPATH, VIRTUAL_ENV)
-  - Conditional builds and inline dependencies
-  - Frontend build patterns (OpenAPI generation, conditional builds)
-  - enterTest vs enterShell usage
-  - Common gotchas and solutions
+- **[Processes and Tasks](./references/processes-tasks.md)** - Process orchestration
+  - Dependencies, health checks, restart policies, common patterns
+
+- **[Git Hooks Guide](./references/git-hooks-guide.md)** - Pre-commit integration
+  - 170+ built-in hooks, custom hooks, language-specific configurations
+
+- **[Advanced Patterns](./references/advanced-patterns.md)** - Production patterns
+  - One-time init, custom health checks, complex dependencies, gotchas
 
 - **[Troubleshooting](./references/troubleshooting.md)** - Common issues and solutions
-  - Migration issues
-  - Platform-specific problems
-  - Service startup failures
-  - Language-specific errors
-  - Performance issues
-  - Debugging tips
+  - Platform-specific problems, service failures, debugging tips
 
 ### Templates
 
@@ -250,254 +219,71 @@ Ready-to-use devenv configurations:
 **User has:** Errors or unexpected behavior
 
 **Steps:**
-1. Read [Troubleshooting](./references/troubleshooting.md)
-2. Check platform-specific issues (Linux, macOS, WSL)
-3. Verify service logs in `.devenv/state/`
-4. Use verbose mode: `devenv shell -vvv`
-5. Isolate issue with minimal configuration
+1. Check [Troubleshooting](./references/troubleshooting.md) for common issues
+2. Verify service logs in `.devenv/state/`
+3. Use verbose mode: `devenv shell -vvv`
+4. Isolate with minimal configuration
 
-## Instructions for Claude
-
-When using this skill:
+## How to Use This Skill
 
 ### 1. Understand User Intent
 
-**Identify the task:**
-- New project setup → Use templates
-- Migration from nix-shell → Read their config, use Migration Guide
-- Adding feature → Reference specific guide
-- Debugging → Check Troubleshooting
+- **New project** → Use templates
+- **Migration** → Read their config, apply patterns from Migration Guide
+- **Add feature** → Reference specific guide (Languages, Services, Processes)
+- **Debug** → Check Troubleshooting guide
 
-### 2. Read Relevant Context
+### 2. Gather Context
 
 **For migrations:**
-- Read user's shell.nix/default.nix/process-compose.yml
-- Identify languages, services, processes
-- Check for complex patterns (custom derivations, platform-specific logic)
+- Read shell.nix/default.nix/process-compose.yml
+- Identify languages, services, processes, platform-specific logic
 
 **For new projects:**
-- Ask about requirements (languages, services, processes)
-- Choose appropriate template
+- Confirm requirements (languages, services, processes)
+- Select appropriate template
 
-### 3. Provide Specific Guidance
+### 3. Provide Guidance
 
-**Use references for detail:**
-- Don't repeat reference content verbatim
-- Point to specific sections: "See Migration Guide > Converting shellHook"
-- Provide quick summary + reference link
+- Point to specific reference sections, don't repeat verbatim
+- Use templates as starting points, customize for user's needs
+- Include test instructions (`devenv shell`, `devenv up`)
 
-**Use templates as starting points:**
-- Copy template content
-- Customize for user's needs
-- Explain key sections
+### 4. Anticipate Platform Issues
 
-### 4. Handle Complexity
+- Linux → patchelf for Python wheels
+- macOS → Framework differences
+- PostgreSQL → Socket vs TCP connections
+- Python → Unset PYTHONPATH before entering shell
 
-**Simple cases (basic Python + PostgreSQL):**
-- Use template directly with minimal changes
+## Additional Resources
 
-**Complex cases (Hakuto-level):**
-- Break down into steps
-- Reference Migration Guide for patterns
-- Address platform-specific concerns
-- Explain tradeoffs
-
-### 5. Validate and Test
-
-**Always include:**
-- How to test the configuration (`devenv shell`, `devenv up`)
-- Expected outcomes
-- How to verify services are running
-
-### 6. Troubleshoot Proactively
-
-**Anticipate issues:**
-- Linux users → Mention patchelf for Python
-- macOS users → Note framework differences
-- PostgreSQL → Explain socket vs TCP connection
-- Python → Remind to unset PYTHONPATH
-
-## Real-World Example: Hakuto Migration
-
-The Hakuto project provides a realistic example of complex nix-shell → devenv migration:
-
-**Before:** 150+ lines across:
-- default.nix: Python + Elm tooling, custom derivations (OpenAPI client, frontend dist build)
-- backend/process-compose.yml: PostgreSQL + Redis
-- frontend/process-compose.yml: elm-land + tailwindcss watchers
-
-**After:** ~80-100 lines in devenv.nix with:
-- Declarative services (PostgreSQL 17, Redis)
-- Process orchestration (backend, frontend-dev, frontend-css)
-- Scripts for API client generation, testing, demo
-- Platform-specific patchelf logic for Linux
-- Pre-commit hooks
-
-**Key patterns from Hakuto:**
-- One-time db-init process with `availability.restart = "no"`
-- Custom PostgreSQL health check verifying role existence
-- Process dependency chain: services → init → application
-- Python + uv with PYTHONPATH management and VIRTUAL_ENV export
-- Elm + elm-land + Tailwind CSS integration with TTY control
-- PostgreSQL 17 with multiple databases, roles, and extensions
-- OpenAPI client generation in enterShell
-- Conditional frontend build (only if dist missing)
-- Inline build dependencies in process exec
-- Playwright browser path configuration
-- HTTP readiness probe for backend
-- Linux-specific patchelf for Python wheels
-
-See [fullstack.nix](./assets/templates/fullstack.nix) template for complete example.
-
-## Best Practices
-
-### 1. Progressive Disclosure
-
-Start simple, add complexity as needed:
-1. Languages and tools
-2. Services
-3. Processes
-4. Scripts
-5. Platform-specific logic
-
-### 2. Use Templates
-
-Don't write from scratch:
-- Start with appropriate template
-- Customize incrementally
-- Test at each step
-
-### 3. Explicit Dependencies
-
-Declare process dependencies on services:
-```nix
-processes.backend = {
-  exec = "uvicorn app:app --reload";
-  process-compose.depends_on.postgres.condition = "process_healthy";
-};
-```
-
-### 4. Health Checks
-
-Define health checks for critical services:
-```nix
-processes.api = {
-  exec = "uvicorn app:app";
-  process-compose.readiness_probe.http_get = {
-    host = "localhost";
-    port = 8000;
-    path = "/health";
-  };
-};
-```
-
-### 5. Platform Awareness
-
-Handle platform differences:
-```nix
-enterTest = pkgs.lib.optionalString pkgs.stdenv.isLinux ''
-  # Linux-specific patchelf
-'';
-```
-
-### 6. Documentation
-
-Comment complex sections:
-```nix
-# Required for PostgreSQL 17's generated columns feature
-services.postgres.package = pkgs.postgresql_17;
-```
-
-## Command Reference
-
-### Basic Commands
-
-```bash
-# Initialize devenv
-devenv init
-
-# Enter shell
-devenv shell
-
-# Start all processes
-devenv up
-
-# Start specific processes
-devenv up backend frontend
-
-# Start in background
-devenv up -d
-
-# Stop processes
-devenv processes stop
-
-# Run script
-devenv shell test
-
-# Show configuration
-devenv info
-
-# Update lock file
-devenv update
-```
-
-### Debugging
-
-```bash
-# Verbose mode
-devenv shell -vvv
-
-# Check syntax
-nix-instantiate --parse devenv.nix
-
-# View process logs
-tail -f .devenv/state/process-compose/logs/backend.log
-
-# Check service status
-devenv info
-```
-
-## Getting More Help
-
-### Latest Documentation
-
-For up-to-date API reference and new features:
-- Use Context7 to fetch latest devenv docs: `/cachix/devenv`
-- Official docs: https://devenv.sh
+**Official Documentation:**
+- Options reference: https://github.com/cachix/devenv/blob/main/docs/src/reference/options.md
+- Website: https://devenv.sh
 - GitHub: https://github.com/cachix/devenv
 
-### Bundled Content
+**For latest features:** Use Context7 to fetch current docs: `/cachix/devenv`
 
-This skill bundles:
-- Migration patterns and common configurations
-- Real-world examples from Hakuto project
-- Platform-specific solutions
-- Troubleshooting guides
+## Quick Reference
 
-### When to Fetch Latest Docs
+**Common Commands:**
+```bash
+devenv init              # Initialize new project
+devenv shell             # Enter environment
+devenv up                # Start all processes
+devenv up -d             # Start in background
+devenv shell <script>    # Run script
+devenv info              # Show config
+devenv shell -vvv        # Debug mode
+```
 
-Use Context7 for:
-- New devenv features
-- Recently added services or options
-- Updated language support
-- Breaking changes in new versions
+**This skill provides:**
+- Migration patterns (nix-shell → devenv)
+- Ready-to-use templates
+- Language/service/process configuration guides
+- Platform-specific solutions (Linux patchelf, macOS frameworks)
+- Troubleshooting patterns
 
-## Summary
-
-This skill helps with:
-- ✅ Migrating from nix-shell to devenv
-- ✅ Setting up new devenv projects
-- ✅ Configuring languages (Python, JavaScript, Elm, Go, Rust)
-- ✅ Managing services (PostgreSQL, Redis, MySQL, etc.)
-- ✅ Orchestrating processes and tasks
-- ✅ Setting up git hooks (171 built-in hooks available)
-- ✅ Solving platform-specific issues
-- ✅ Debugging devenv configurations
-
-**Start here:**
-1. Identify user's goal (new project, migration, add feature, debug)
-2. Choose appropriate template or reference guide
-3. Customize for their specific needs
-4. Test and iterate
-
-**Remember:** Keep it simple, use templates, reference guides for details, and test incrementally.
+**Workflow:**
+1. Identify goal → 2. Select template/guide → 3. Customize → 4. Test incrementally

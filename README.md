@@ -83,20 +83,6 @@ Based on real-world migration experience:
 - Automatic platform handling
 - Declarative processes with health checks
 
-**Stack**: Python + uv + PostgreSQL 17 + Redis + Elm + elm-land + Tailwind
-
----
-
-## Key Gotchas Solved
-
-This skill handles real migration issues discovered during Hakuto conversion:
-
-✅ **PostgreSQL quoting**: SQL `''` vs Nix `''''` syntax
-✅ **uv monorepo**: Correct `pyproject.toml` paths
-✅ **nixpkgs-python**: Required input for version pinning
-✅ **Code generation**: `enterTest` vs `enterShell` timing
-✅ **Process dependencies**: One-time tasks with `exit 0`
-
 ---
 
 ## Documentation

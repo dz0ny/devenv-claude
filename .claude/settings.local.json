@@ -14,7 +14,8 @@
       "WebSearch",
       "Bash(npx:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:devenv.sh)"
+      "WebFetch(domain:devenv.sh)",
+      "Bash(git reset:*)"
     ]
   }
 }
